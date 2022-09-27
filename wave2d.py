@@ -5,7 +5,7 @@ Created on Mon Sep 26 09:31:52 2022
 @author: jonijura
 
 vibrating rectangular membrane
-f = string displacement, dual vertices
+f = string displacement, primal vertices
 lap f = f'' 
 -> system
     d_t f = *dg
@@ -13,7 +13,7 @@ lap f = f''
 leapfrog time discretization
 
 boundary condition
-    f=0, comes automatically from placing f on dual vertices
+    f=0, encorporated to h0i
 initial condition
     f(x,y,0)=sin(x)sin(2y)
     g=0
@@ -22,11 +22,10 @@ solution
 """
 
 import numpy as np
-from scipy.sparse import spdiags, diags
+from scipy.sparse import diags
 import matplotlib.pyplot as plt
 from gmesh_recmesh import makerec
-from pydec import simplicial_complex, SimplicialMesh
-from matplotlib.pyplot import figure
+from pydec import simplicial_complex
 
 Nxy=10
 bxy = np.pi
@@ -39,25 +38,25 @@ dt = bt/Nt
 V,E = makerec(bxy,bxy,dxy)
 sc = simplicial_complex(V,E)
 
-boundEdges = sc.boundary()
-boundVertices = set([bs for b in boundEdges for bs in b.boundary()])
-boundVerticeIndexes = [sc[0].simplex_to_index[v] for v in boundVertices]
-
 f = np.zeros(sc[1].num_simplices)
 g = np.zeros(sc[0].num_simplices)
 
 d0=sc[0].d
 h1=sc[1].star
 h0i=sc[0].star_inv
+#set boundary condition f=0
+boundEdgs = sc.boundary()
+boundVerts = set([boundVert for edge in boundEdgs for boundVert in edge.boundary()])
+boundVertInds = [sc[0].simplex_to_index[v] for v in boundVerts]
 h0ivals = h0i.diagonal()
-h0ivals[boundVerticeIndexes]=0
+h0ivals[boundVertInds]=0
 h0i = diags(h0ivals)
-
+#some mesh quality statistics
 print("h1 min: "+str(np.min(h1.diagonal())))
 print("h1 max: "+str(np.max(h1.diagonal())))
-print("h0i min: "+str(np.max(h0i.diagonal())))
-print("h0i max: "+str(np.min(h0i.diagonal())))
-
+print("h0i min: "+str(np.min(h0i.diagonal())))
+print("h0i max: "+str(np.max(h0i.diagonal())))
+#initial values
 g = np.sin(V[:,0])*np.sin(2*V[:,1])
 
 A = dt*h1*d0
