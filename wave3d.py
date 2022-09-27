@@ -12,12 +12,12 @@ from gmesh_recmesh import makecube
 from pydec import simplicial_complex
 import time
 
-Nxyz = 13
+Nxyz = 10
 bxyz = np.pi
 dxyz = bxyz/Nxyz
 
 bt = 6
-Nt = 200
+Nt = 400
 dt = bt/Nt
 
 prev = time.time()
@@ -34,16 +34,16 @@ prev = time.time()
 d0=sc[0].d
 print("\td0 calculated in "+str(time.time()-prev))
 prev=time.time()
-h1=sc[1].star
-print("\th1 calculated in "+str(time.time()-prev))
-prev=time.time()
 h0i=sc[0].star_inv
 print("\th0i calculated in "+str(time.time()-prev))
+prev=time.time()
+h1=sc[1].star
+print("\th1 calculated in "+str(time.time()-prev))
 #some mesh quality statistics
-# print("h1 min: "+str(np.min(h1.diagonal())))
-# print("h1 max: "+str(np.max(h1.diagonal())))
-# print("h0i min: "+str(np.min(h0i.diagonal())))
-# print("h0i max: "+str(np.max(h0i.diagonal())))
+print("h1 min: "+str(np.min(h1.diagonal())))
+print("h1 max: "+str(np.max(h1.diagonal())))
+print("h0i min: "+str(np.min(h0i.diagonal())))
+print("h0i max: "+str(np.max(h0i.diagonal())))
 
 #set boundary condition f=0
 prev = time.time()
@@ -68,7 +68,7 @@ B = dt*h0i*(-d0.T)
 f = np.sin(V[:,0])*np.sin(2*V[:,1])*np.sin(V[:,2])
 g = 0.5*A*f
 
-refp = len(V)-3
+refp = len(V)-200
 
 hist = np.zeros(Nt+1)
 hist[0]=f[refp]

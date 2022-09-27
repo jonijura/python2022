@@ -27,10 +27,10 @@ import matplotlib.pyplot as plt
 from gmesh_recmesh import makerec
 from pydec import simplicial_complex
 
-Nxy = 10
+Nxy = 15
 bxy = np.pi
 dxy = bxy/Nxy
-refp = 100
+refp = 25
 
 bt = 6
 Nt = 50
