@@ -24,52 +24,67 @@ solution
 import numpy as np
 from scipy.sparse import spdiags, diags
 import matplotlib.pyplot as plt
+from gmesh_recmesh import makerec
+from pydec import simplicial_complex, SimplicialMesh
+from matplotlib.pyplot import figure
 
-N=10
-s=0
-e=np.pi
-dx = (e-s)/N
+Nxy=10
+bxy = np.pi
+dxy = bxy/Nxy
 
-ts = 0
-te = 20
-tN = 100
-dt = (te-ts)/tN
+bt = 5
+Nt = 50
+dt = bt/Nt
 
-lpd = np.linspace(s+dx/2, e-dx/2,N) #locations of dual vertices and circumcenters of primal edges
-lp = np.linspace(s, e, N+1) #primal vertices and dual edge circumcenters
-d = spdiags([-np.ones(N+1), np.ones(N+1)],[0,1], N,N+1) #discrete derivative
-#primal edges to dual vertices
-h1 = diags((1/dx)*np.ones(N))
-#dual edges to primal vertices, inverse of h0
-ih0 = diags(np.concatenate(([2/dx],(1/dx)*np.ones(N-1),[2/dx])))
+V,E = makerec(bxy,bxy,dxy)
+sc = simplicial_complex(V,E)
 
-#time stepping matrices from system
-A=dt*h1*d
-#discrete derivative for dual vertices: -d.T, deducted from dual edge orientation
-B=dt*ih0*-d.T
+boundEdges = sc.boundary()
+boundVertices = set([bs for b in boundEdges for bs in b.boundary()])
+boundVerticeIndexes = [sc[0].simplex_to_index[v] for v in boundVertices]
+
+f = np.zeros(sc[1].num_simplices)
+g = np.zeros(sc[0].num_simplices)
+
+d0=sc[0].d
+h1=sc[1].star
+h0i=sc[0].star_inv
+h0ivals = h0i.diagonal()
+h0ivals[boundVerticeIndexes]=0
+h0i = diags(h0ivals)
+
+print("h1 min: "+str(np.min(h1.diagonal())))
+print("h1 max: "+str(np.max(h1.diagonal())))
+print("h0i min: "+str(np.max(h0i.diagonal())))
+print("h0i max: "+str(np.min(h0i.diagonal())))
+
+g = np.sin(V[:,0])*np.sin(2*V[:,1])
+
+A = dt*h1*d0
+B = dt*h0i*(-d0.T)
 
 
-f = np.sin(lpd)
-#g at time dt/2, euler forward
-g=0.5*B*f
-
-hist = np.zeros(tN+1)
-mp = int(N/2)
-hist[0]=f[mp]
-for i in range(tN):
-    f+=A*g
+f=0.5*A*g
+for i in range(Nt):
     g+=B*f
-    hist[i+1]=f[mp]
+    f+=A*g
+    ax = plt.axes(projection='3d')
+    ax.set_zlim( [-1,1])
+    plt.title("Simulaatio")
+    ax.plot_trisurf(V[:,0], V[:,1], g,
+                    cmap='viridis', edgecolor='none')
+    plt.show()
+    
 
-expected = np.cos(te)*np.sin(lpd)
 
-plt.title("lopputulos")
-plt.plot(lpd, f,'r')
-plt.plot(lpd, expected,'b')
-plt.show()
 
-tlp = np.linspace(ts, te, tN+1)
-plt.title("keskipisteen historia")
-plt.plot(tlp, hist, 'r')
-plt.plot(tlp, np.sin(lpd[mp])*np.cos(tlp))
-plt.show()
+
+
+
+
+
+
+
+
+
+
