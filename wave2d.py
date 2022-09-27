@@ -27,11 +27,12 @@ import matplotlib.pyplot as plt
 from gmesh_recmesh import makerec
 from pydec import simplicial_complex
 
-Nxy=10
+Nxy = 10
 bxy = np.pi
 dxy = bxy/Nxy
+refp = 100
 
-bt = 5
+bt = 6
 Nt = 50
 dt = bt/Nt
 
@@ -64,17 +65,32 @@ B = dt*h0i*(-d0.T)
 f = np.sin(V[:,0])*np.sin(2*V[:,1])
 g = 0.5*A*f
 
+hist = np.zeros(Nt+1)
+hist[0]=f[refp]
 for i in range(Nt):
     f+=B*g
     g+=A*f
+    hist[i+1]=f[refp]
 
-ax = plt.axes(projection='3d')
+fig = plt.figure()
+ax = fig.add_subplot(121,projection='3d')
 ax.set_zlim( [-1,1])
-plt.title("Result")
-ax.plot_trisurf(V[:,0], V[:,1], f,
-                cmap='viridis', edgecolor='none')
+plt.title("Simulation result")
+ax.plot_trisurf(V[:,0], V[:,1], f,cmap='viridis', edgecolor='none')
+
+expected = np.sin(V[:,0])*np.sin(2*V[:,1])*np.cos(np.sqrt(5)*bt)
+ax = fig.add_subplot(122,projection='3d')
+plt.title("Error")
+ax.plot_trisurf(V[:,0], V[:,1], expected-f ,cmap='viridis', edgecolor='none')
+
 plt.show()
-    
+
+lp = np.linspace(0,bt, Nt+1)
+plt.title("History of reference point")
+plt.plot(lp, hist, 'r')
+plt.plot(lp, np.sin(V[refp,0])*np.sin(2*V[refp,1])*np.cos(np.sqrt(5)*lp),'b')
+plt.legend(["simulation", "analytic"],loc=2)
+plt.show()
 
 
 
