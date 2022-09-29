@@ -30,7 +30,7 @@ from pydec import simplicial_complex
 Nxy = 15
 bxy = np.pi
 dxy = bxy/Nxy
-refp = 25
+refp = 125
 
 bt = 6
 Nt = 50
