@@ -9,29 +9,39 @@ import numpy as np
 import matplotlib.pyplot as plt
 from gmesh_recmesh import makerec
 from pydec import simplicial_complex
+from scipy.sparse import diags
 
 Nxy = 10
-bxy = 2*np.pi
-dxy = bxy/Nxy
+bx = 2*np.pi
+bt = 10
+dxy = bx/Nxy
 
 circ = 15
 
-V,E = makerec(bxy,bxy,dxy)
+V,E = makerec(bt,bx,dxy)
 sc = simplicial_complex(V,E)
 
 plt.figure(figsize=(8, 8), dpi=80)
-
 plt.triplot(V[:,0], V[:,1], E)
-plt.plot(sc[2].circumcenter[:,0],sc[2].circumcenter[:,1],'.')
-
+plt.plot(sc[2].circumcenter[:,0],sc[2].circumcenter[:,1],'.g')
 # r = np.linalg.norm(V[sc[0].simplices[sc[2].simplices[circ][1]][0]]-sc[2].circumcenter[circ,:])
 # circle2 = plt.Circle((sc[2].circumcenter[circ,0],sc[2].circumcenter[circ,1]), r, color='b', fill=False)
 # ax = plt.gca()
 # ax.add_patch(circle2)
-
+edgeVectors = V[sc[1].simplices[:,0]]-V[sc[1].simplices[:,1]]
+timelikeEdges = 2*(edgeVectors[:,1]**2-edgeVectors[:,0]**2>0)-1
+drawtimelike = np.where((edgeVectors[:,1]**2-edgeVectors[:,0]**2>0))
+plt.plot(sc[1].circumcenter[drawtimelike,0],sc[1].circumcenter[drawtimelike,1],'.r')
 plt.show()
 
-lap = sc[0].star_inv * sc[0].d.T * sc[1].star * sc[0].d
+h1 = sc[1].star.diagonal()
+h1 = diags(h1*timelikeEdges)
+
+lap = -sc[0].star_inv * sc[0].d.T * h1 * sc[0].d
+print("h1 min: "+str(np.min(h1.diagonal())))
+print("h1 max: "+str(np.max(h1.diagonal())))
+print("h0i max: "+str(np.max(sc[0].star_inv.diagonal())))
+print("h0i min: "+str(np.min(sc[0].star_inv.diagonal())))
 print("max: "+ str(np.max(lap)) + "  min: "+str(np.min(lap)))
 
 xmin = np.min(V[:,0])
@@ -42,14 +52,16 @@ tmax = np.max(V[:,1])
 eps = 1e-10
 tbord = np.where((abs(V[:,0]-xmin)<eps) | (abs(V[:,0]-xmax)<eps))
 xinit = np.where(abs(V[:,1]-tmin)<eps)
-init = np.where((abs(V[:,0]-xmin)<eps) | (abs(V[:,0]-xmax)<eps) | (abs(V[:,1]-tmin)<eps))
+xend = np.where(abs(V[:,1]-tmax)<eps)
+init = np.where((abs(V[:,0]-xmin)<eps) | (abs(V[:,0]-xmax)<eps) | (abs(V[:,1]-tmin)<eps)) #np.unique(np.concatenate((tbord,xinit),1))
 initC = np.where( ~ ((abs(V[:,0]-xmin)<eps) | (abs(V[:,0]-xmax)<eps) | (abs(V[:,1]-tmin)<eps)))
 
 A2 = lap.T[init].T
 A1 = lap.T[initC].T
-
+# plt.plot(V[init,0],V[init,1],'.r')
 f = np.zeros(len(V))
 f[xinit] = np.sin(V[xinit,0])
+# f[xend] = np.sin(V[xend,0])*np.cos(tmax);
 
 ax = plt.axes(projection='3d')
 ax.set_zlim( [-1,1])
