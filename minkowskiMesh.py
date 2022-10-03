@@ -13,7 +13,7 @@ from scipy.sparse import diags
 
 Nxy = 10
 bx = 2*np.pi
-bt = 10
+bt = 2*np.pi
 dxy = bx/Nxy
 
 circ = 15
@@ -34,16 +34,6 @@ drawtimelike = np.where((edgeVectors[:,1]**2-edgeVectors[:,0]**2>0))
 plt.plot(sc[1].circumcenter[drawtimelike,0],sc[1].circumcenter[drawtimelike,1],'.r')
 plt.show()
 
-h1 = sc[1].star.diagonal()
-h1 = diags(h1*timelikeEdges)
-
-lap = -sc[0].star_inv * sc[0].d.T * h1 * sc[0].d
-print("h1 min: "+str(np.min(h1.diagonal())))
-print("h1 max: "+str(np.max(h1.diagonal())))
-print("h0i max: "+str(np.max(sc[0].star_inv.diagonal())))
-print("h0i min: "+str(np.min(sc[0].star_inv.diagonal())))
-print("max: "+ str(np.max(lap)) + "  min: "+str(np.min(lap)))
-
 xmin = np.min(V[:,0])
 xmax = np.max(V[:,0])
 tmin = np.min(V[:,1])
@@ -55,6 +45,19 @@ xinit = np.where(abs(V[:,1]-tmin)<eps)
 xend = np.where(abs(V[:,1]-tmax)<eps)
 init = np.where((abs(V[:,0]-xmin)<eps) | (abs(V[:,0]-xmax)<eps) | (abs(V[:,1]-tmin)<eps)) #np.unique(np.concatenate((tbord,xinit),1))
 initC = np.where( ~ ((abs(V[:,0]-xmin)<eps) | (abs(V[:,0]-xmax)<eps) | (abs(V[:,1]-tmin)<eps)))
+
+h1 = sc[1].star.diagonal()
+h1 = diags(h1*timelikeEdges)
+h0i = sc[0].star_inv.diagonal()
+h0i[tbord]=0
+h0i = diags(h0i)
+
+lap = h0i * sc[0].d.T * h1 * sc[0].d
+print("h1 min: "+str(np.min(h1.diagonal())))
+print("h1 max: "+str(np.max(h1.diagonal())))
+print("h0i max: "+str(np.max(h0i.diagonal())))
+print("h0i min: "+str(np.min(h0i.diagonal())))
+print("max: "+ str(np.max(lap)) + "  min: "+str(np.min(lap)))
 
 A2 = lap.T[init].T
 A1 = lap.T[initC].T
@@ -84,11 +87,38 @@ print("solution error: "+str(np.linalg.norm(lap*f)))
 exact = np.sin(V[:,0])*np.cos(V[:,1])
 ax = plt.axes(projection='3d')
 ax.set_zlim( [-1,1])
-plt.title("Exact solution")
-ax.plot_trisurf(V[:,0], V[:,1], exact,cmap='viridis', edgecolor='none')
+plt.title("dxx-dtt of exact solution")
+ax.plot_trisurf(V[:,0], V[:,1], lap*exact,cmap='viridis', edgecolor='none')
 plt.show()
 
 print("exact solution error: "+str(np.linalg.norm(lap*exact)))
+
+
+exact = np.sin(V[:,0])*np.cos(V[:,1])
+ax = plt.axes()
+plt.title("d*exact")
+ax.tricontour(sc[1].circumcenter[:,0], sc[1].circumcenter[:,1], abs(sc[0].d*exact),levels=[0.1])
+plt.show()
+
+exact = np.sin(V[:,0])*np.cos(V[:,1])
+ax = plt.axes()
+plt.title("h1*d*exact")
+ax.tricontour(sc[1].circumcenter[:,0], sc[1].circumcenter[:,1], abs(h1*sc[0].d*exact),levels=[0.1])
+plt.show()
+
+exact = np.sin(V[:,0])*np.cos(V[:,1])
+ax = plt.axes(projection='3d')
+ax.set_zlim( [-1,1])
+plt.title("d.T*h1*d*exact")
+ax.plot_trisurf(V[:,0], V[:,1], sc[0].d.T * h1 * sc[0].d*exact,cmap='viridis', edgecolor='none')
+plt.show()
+
+exact = np.sin(V[:,0])*np.cos(V[:,1])
+ax = plt.axes(projection='3d')
+ax.set_zlim( [-1,1])
+plt.title("dxx-dtt of exact solution")
+ax.plot_trisurf(V[:,0], V[:,1], lap*exact,cmap='viridis', edgecolor='none')
+plt.show()
 
 # =============================================================================
 # pts = [[2.62729316, 1.53518664],[2.10085398, 1.22306732],[2.16674694, 1.70210904]]
