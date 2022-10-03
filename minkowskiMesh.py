@@ -11,7 +11,7 @@ from gmesh_recmesh import makerec
 from pydec import simplicial_complex
 from scipy.sparse import diags
 
-Nxy = 10
+Nxy = 18
 bx = 2*np.pi
 bt = 2*np.pi
 dxy = bx/Nxy
@@ -53,11 +53,9 @@ h0i[tbord]=0
 h0i = diags(h0i)
 
 lap = h0i * sc[0].d.T * h1 * sc[0].d
-print("h1 min: "+str(np.min(h1.diagonal())))
-print("h1 max: "+str(np.max(h1.diagonal())))
-print("h0i max: "+str(np.max(h0i.diagonal())))
-print("h0i min: "+str(np.min(h0i.diagonal())))
-print("max: "+ str(np.max(lap)) + "  min: "+str(np.min(lap)))
+print(f"h1  min: {np.min(h1.diagonal())} \r\n\tmax: {np.max(h1.diagonal())}")
+print(f"h0i min: {np.min(h0i.diagonal())} \r\n\tmax: {np.max(h0i.diagonal())}")
+print(f"lap min: {np.min(lap)} \r\n\tmax: {np.max(lap)} ")
 
 A2 = lap.T[init].T
 A1 = lap.T[initC].T
@@ -87,37 +85,54 @@ print("solution error: "+str(np.linalg.norm(lap*f)))
 exact = np.sin(V[:,0])*np.cos(V[:,1])
 ax = plt.axes(projection='3d')
 ax.set_zlim( [-1,1])
-plt.title("dxx-dtt of exact solution")
-ax.plot_trisurf(V[:,0], V[:,1], lap*exact,cmap='viridis', edgecolor='none')
+plt.title("exact solution")
+ax.plot_trisurf(V[:,0], V[:,1], exact,cmap='viridis', edgecolor='none')
 plt.show()
 
 print("exact solution error: "+str(np.linalg.norm(lap*exact)))
 
 
-exact = np.sin(V[:,0])*np.cos(V[:,1])
-ax = plt.axes()
-plt.title("d*exact")
-ax.tricontour(sc[1].circumcenter[:,0], sc[1].circumcenter[:,1], abs(sc[0].d*exact),levels=[0.1])
-plt.show()
+# =============================================================================
+# exact = np.sin(V[:,0])*np.cos(V[:,1])
+# ax = plt.axes()
+# plt.title("d*exact")
+# ax.tricontour(sc[1].circumcenter[:,0], sc[1].circumcenter[:,1], abs(sc[0].d*exact),levels=[0.1])
+# plt.show()
+# 
+# exact = np.sin(V[:,0])*np.cos(V[:,1])
+# ax = plt.axes()
+# plt.title("h1*d*exact")
+# ax.tricontour(sc[1].circumcenter[:,0], sc[1].circumcenter[:,1], abs(h1*sc[0].d*exact),levels=[0.1])
+# plt.show()
+# 
+# exact = np.sin(V[:,0])*np.cos(V[:,1])
+# ax = plt.axes(projection='3d')
+# ax.set_zlim( [-1,1])
+# plt.title("d.T*h1*d*exact")
+# ax.plot_trisurf(V[:,0], V[:,1], sc[0].d.T * h1 * sc[0].d*exact,cmap='viridis', edgecolor='none')
+# plt.show()
+# =============================================================================
 
 exact = np.sin(V[:,0])*np.cos(V[:,1])
-ax = plt.axes()
-plt.title("h1*d*exact")
-ax.tricontour(sc[1].circumcenter[:,0], sc[1].circumcenter[:,1], abs(h1*sc[0].d*exact),levels=[0.1])
-plt.show()
 
-exact = np.sin(V[:,0])*np.cos(V[:,1])
-ax = plt.axes(projection='3d')
-ax.set_zlim( [-1,1])
-plt.title("d.T*h1*d*exact")
-ax.plot_trisurf(V[:,0], V[:,1], sc[0].d.T * h1 * sc[0].d*exact,cmap='viridis', edgecolor='none')
-plt.show()
-
-exact = np.sin(V[:,0])*np.cos(V[:,1])
-ax = plt.axes(projection='3d')
-ax.set_zlim( [-1,1])
+fig = plt.figure(figsize=(20,8), dpi=80)
+ax = fig.add_subplot(131)
 plt.title("dxx-dtt of exact solution")
+ax.tricontour(V[:,0], V[:,1], abs(lap*exact),levels = [0.01,0.03,0.1])
+ax = fig.add_subplot(132)
+plt.triplot(V[:,0], V[:,1], E)
+ax = fig.add_subplot(133,projection='3d')
 ax.plot_trisurf(V[:,0], V[:,1], lap*exact,cmap='viridis', edgecolor='none')
+plt.show()
+
+fig = plt.figure(figsize=(20,8), dpi=80)
+ax = fig.add_subplot(131)
+plt.title("error")
+ax.tricontour(V[:,0], V[:,1], abs(f-exact),levels = [0.01,0.03,0.1])
+ax = fig.add_subplot(132)
+plt.triplot(V[:,0], V[:,1], E)
+ax = fig.add_subplot(133,projection='3d')
+ax.plot_trisurf(V[:,0], V[:,1], f-exact,cmap='viridis', edgecolor='none')
 plt.show()
 
 # =============================================================================
