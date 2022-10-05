@@ -31,8 +31,8 @@ e=np.pi
 dx = (e-s)/N
 
 ts = 0
-te = 20
-tN = 100
+te = 6
+tN = 10
 dt = (te-ts)/tN
 
 lpd = np.linspace(s+dx/2, e-dx/2,N) #locations of dual vertices and circumcenters of primal edges

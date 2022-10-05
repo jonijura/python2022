@@ -3,6 +3,24 @@
 Created on Thu Sep 29 15:53:20 2022
 
 @author: jonijura
+same problem as in wave1d but now solved directly on a 1+1 dimensional spacetime mesh
+Using minkowski metric the wave equation d_tt f = d_xx f is equal to
+*d*d f = 0
+initial values are given to f so that f = [u,i] vector, with values located on primal
+vertices, i corresponds to known initial values at t=0 and u to unknown.
+boundary values f = 0 could not be encorporated to initial values, but in the hodge h0i
+mapping dual 2 forms to primal 0 forms, such that h0i=0 for boundary dual 2 forms
+The circumcenters are calculated in the sense of minkowski metric by modifying circumcenter.py
+h1 is modified by multiplying timelike primal edge values with -1 (why?)
+    timelike if (dt)**2-(dx)**2>0
+Representing the matrix *d*d as [A1,A2] *d*d f=0 leads to
+    [A1,A2]*[u,i].T=[A1u+A2i]=0,
+where u is solved as the least squares solution to
+    A1u = -A2i = b
+
+why does modifying h1 work?
+why do boundary values need to be in h0i?
+why is the solution right only it bt = n*pi??
 """
 
 import numpy as np
@@ -11,14 +29,14 @@ from gmesh_recmesh import makerec,reqrecMsh
 from pydec import simplicial_complex
 from scipy.sparse import diags
 
-Nxy = 30
+Nx = 18
 bx = 2*np.pi
 bt = 2*np.pi
-dxy = bx/Nxy
+dx = bx/Nx
 
 circ = 15
 
-V,E = reqrecMsh(bt,bx,dxy)
+V,E = reqrecMsh(bx,bt,dx) #makerec
 sc = simplicial_complex(V,E)
 
 plt.figure(figsize=(8, 8), dpi=80)
@@ -41,6 +59,7 @@ tmax = np.max(V[:,1])
 
 eps = 1e-10
 tbord = np.where((abs(V[:,0]-xmin)<eps) | (abs(V[:,0]-xmax)<eps))
+# plt.plot(V[tbord,0],V[tbord,1],'.')
 xinit = np.where(abs(V[:,1]-tmin)<eps)
 xend = np.where(abs(V[:,1]-tmax)<eps)
 init = np.where((abs(V[:,0]-xmin)<eps) | (abs(V[:,0]-xmax)<eps) | (abs(V[:,1]-tmin)<eps)) #np.unique(np.concatenate((tbord,xinit),1))
@@ -59,7 +78,6 @@ print(f"lap min: {np.min(lap)} \r\n\tmax: {np.max(lap)} ")
 
 A2 = lap.T[init].T
 A1 = lap.T[initC].T
-# plt.plot(V[init,0],V[init,1],'.r')
 f = np.zeros(len(V))
 f[xinit] = np.sin(V[xinit,0])
 # f[xend] = np.sin(V[xend,0])*np.cos(tmax);
@@ -91,6 +109,10 @@ plt.show()
 
 print("exact solution error: "+str(np.linalg.norm(lap*exact)))
 
+# =============================================================================
+# ax = plt.axes()
+# ax.tricontour(V[:,0], V[:,1], abs(exact))
+# =============================================================================
 
 # =============================================================================
 # exact = np.sin(V[:,0])*np.cos(V[:,1])
@@ -115,23 +137,21 @@ print("exact solution error: "+str(np.linalg.norm(lap*exact)))
 
 exact = np.sin(V[:,0])*np.cos(V[:,1])
 
-fig = plt.figure(figsize=(20,8), dpi=80)
-ax = fig.add_subplot(131)
+fig = plt.figure(figsize=(20,14), dpi=80)
+ax = fig.add_subplot(231)
 plt.title("dxx-dtt of exact solution")
-ax.tricontour(V[:,0], V[:,1], abs(lap*exact),levels = [0.01,0.03,0.1])
-ax = fig.add_subplot(132)
+ax.tricontour(V[:,0], V[:,1], abs(lap*exact),levels = [0.0006,0.002,0.006])#
+ax = fig.add_subplot(232)
 plt.triplot(V[:,0], V[:,1], E)
-ax = fig.add_subplot(133,projection='3d')
+ax = fig.add_subplot(233,projection='3d')
 ax.plot_trisurf(V[:,0], V[:,1], lap*exact,cmap='viridis', edgecolor='none')
-plt.show()
 
-fig = plt.figure(figsize=(20,8), dpi=80)
-ax = fig.add_subplot(131)
+ax = fig.add_subplot(234)
 plt.title("error")
-ax.tricontour(V[:,0], V[:,1], abs(f-exact),levels = [0.01,0.03,0.1])
-ax = fig.add_subplot(132)
+ax.tricontour(V[:,0], V[:,1], abs(f-exact),levels = [0.00006,0.0002,0.0006])#,levels = [0.0001,0.0003,0.001]
+ax = fig.add_subplot(235)
 plt.triplot(V[:,0], V[:,1], E)
-ax = fig.add_subplot(133,projection='3d')
+ax = fig.add_subplot(236,projection='3d')
 ax.plot_trisurf(V[:,0], V[:,1], f-exact,cmap='viridis', edgecolor='none')
 plt.show()
 
@@ -147,4 +167,32 @@ plt.show()
 # 
 # def md(a,b):
 #     return (a[:,1]-b[1])**2 - (a[:,0]-b[0])**2
+# =============================================================================
+
+# =============================================================================
+# fig = plt.figure(figsize=(20,8), dpi=80)
+# ax = fig.add_subplot(231)
+# plt.title("1d")
+# ax.plot(lp1, ex1)
+# ax.plot(lp1, sim1)
+# ax = fig.add_subplot(234)
+# plt.title("error")
+# ax.plot(lp1, ex1-sim1)
+# 
+# ax = fig.add_subplot(232)
+# plt.title("2d")
+# ax.plot(lp2, ex2)
+# ax.plot(lp2, sim2)
+# ax = fig.add_subplot(235)
+# plt.title("error")
+# ax.plot(lp2, ex2-sim2)
+# 
+# ax = fig.add_subplot(233)
+# plt.title("3d")
+# ax.plot(lp3, ex3)
+# ax.plot(lp3, sim3)
+# ax = fig.add_subplot(236)
+# plt.title("error")
+# ax.plot(lp3, ex3-sim3)
+# plt.show()
 # =============================================================================

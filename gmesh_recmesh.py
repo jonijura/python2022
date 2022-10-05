@@ -103,7 +103,7 @@ def makecube(w,h,d,r):
     gmsh.finalize()
     return (V,E.astype('int32'))
 
-def reqrecMsh(h,w,r):
+def reqrecMsh(w,h,r):
     nx = int(np.ceil(w/r))+1
     dx = w/(nx-1)
     ny = int(np.round(h/(0.866*dx)))+1
