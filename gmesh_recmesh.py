@@ -103,6 +103,42 @@ def makecube(w,h,d,r):
     gmsh.finalize()
     return (V,E.astype('int32'))
 
+def reqrecMsh(h,w,r):
+    nx = int(np.ceil(w/r))+1
+    dx = w/(nx-1)
+    ny = int(np.round(h/(0.866*dx)))+1
+    dy = h/(ny-1)
+    evenr = np.linspace(0, w, nx)
+    oddr = np.linspace(-dx/2, w+dx/2,nx+1)
+    oddr[0]+=dx/2
+    oddr[-1]-=dx/2
+    V = np.empty((0,2))
+    for i in range(ny):
+        if i%2==0:
+            row = np.vstack((evenr, i*dy*np.ones(nx))).T
+        else:
+            row = np.vstack((oddr, i*dy*np.ones(nx+1))).T
+        V = np.vstack((V,row))
+    T=np.array([[0,nx,nx+1],[0,nx+1,1]])
+    RE=np.empty((0,3))
+    for i in range(nx):
+        RE=np.vstack((RE,T+i))
+    E=np.empty((0,3))
+    for i in range(ny-1):
+        if i%2==0:
+            row = RE[:-1]+int(i/2)*(2*nx+1)
+        else:
+            row = RE[1:]+int((i-1)/2)*(2*nx+1)+nx
+        E=np.vstack((E,row))
+    return (V,E.astype('int32'))
+
+# =============================================================================
+# plt.figure(figsize=(8, 8), dpi=80)    
+# V,E = reqrecMsh(1,1,0.3)
+# plt.triplot(V[:,0], V[:,1], E)
+# =============================================================================
+    
+
 # =============================================================================
 # V,E = makerec(np.pi,np.pi, 0.3)
 # sc = SimplicialMesh(V,E)

@@ -7,18 +7,18 @@ Created on Thu Sep 29 15:53:20 2022
 
 import numpy as np
 import matplotlib.pyplot as plt
-from gmesh_recmesh import makerec
+from gmesh_recmesh import makerec,reqrecMsh
 from pydec import simplicial_complex
 from scipy.sparse import diags
 
-Nxy = 18
+Nxy = 30
 bx = 2*np.pi
 bt = 2*np.pi
 dxy = bx/Nxy
 
 circ = 15
 
-V,E = makerec(bt,bx,dxy)
+V,E = reqrecMsh(bt,bx,dxy)
 sc = simplicial_complex(V,E)
 
 plt.figure(figsize=(8, 8), dpi=80)
