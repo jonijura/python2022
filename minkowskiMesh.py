@@ -21,6 +21,7 @@ where u is solved as the least squares solution to
 why does modifying h1 work?
 why do boundary values need to be in h0i?
 why is the solution right only it bt = n*pi??
+    implicit von neumann boundary condition at the end
 """
 
 import numpy as np
