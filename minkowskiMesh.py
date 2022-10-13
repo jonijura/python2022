@@ -29,7 +29,7 @@ from gmesh_recmesh import makerec,reqrecMsh
 from pydec import simplicial_complex
 from scipy.sparse import diags
 
-Nx = 18
+Nx = 10
 bx = 2*np.pi
 bt = 2*np.pi
 dx = bx/Nx
@@ -37,8 +37,8 @@ dx = bx/Nx
 circ = 15
 
 V,E = reqrecMsh(bx,bt,dx) #makerec
-# V = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\vert.txt")*2*np.pi
-# E = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\tria.txt",dtype='int32')
+# V = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\vert.txt")*2*np.pi
+# E = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\tria.txt",dtype='int32')
 sc = simplicial_complex(V,E)
 
 plt.figure(figsize=(8, 8), dpi=80)

@@ -24,19 +24,23 @@ solution
 import numpy as np
 from scipy.sparse import diags
 import matplotlib.pyplot as plt
-from gmesh_recmesh import makerec
+from gmesh_recmesh import makerec, reqrecMsh
 from pydec import simplicial_complex
 
-Nxy = 15
+Nxy = 10
 bxy = np.pi
 dxy = bxy/Nxy
-refp = 125
+refp = 88
+sin1 = 1
+sin2 = 1
 
-bt = 6
+bt = 4.5
 Nt = 50
 dt = bt/Nt
 
 V,E = makerec(bxy,bxy,dxy)
+# V = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\vert.txt")*np.pi
+# E = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\tria.txt",dtype='int32')
 sc = simplicial_complex(V,E)
 
 d0=sc[0].d
@@ -62,7 +66,7 @@ A = dt*h1*d0
 B = dt*h0i*(-d0.T)
 
 #initial values f(0), g(dt/2)
-f = np.sin(V[:,0])*np.sin(2*V[:,1])
+f = np.sin(sin1*V[:,0])*np.sin(sin2*V[:,1])
 g = 0.5*A*f
 
 hist = np.zeros(Nt+1)
@@ -78,7 +82,7 @@ ax.set_zlim( [-1,1])
 plt.title("Simulation result")
 ax.plot_trisurf(V[:,0], V[:,1], f,cmap='viridis', edgecolor='none')
 
-expected = np.sin(V[:,0])*np.sin(2*V[:,1])*np.cos(np.sqrt(5)*bt)
+expected = np.sin(sin1*V[:,0])*np.sin(sin2*V[:,1])*np.cos(np.sqrt(sin1**2+sin2**2)*bt)
 ax = fig.add_subplot(122,projection='3d')
 plt.title("Error")
 ax.plot_trisurf(V[:,0], V[:,1], expected-f ,cmap='viridis', edgecolor='none')
@@ -88,7 +92,7 @@ plt.show()
 lp = np.linspace(0,bt, Nt+1)
 plt.title("History of reference point")
 plt.plot(lp, hist, 'r')
-plt.plot(lp, np.sin(V[refp,0])*np.sin(2*V[refp,1])*np.cos(np.sqrt(5)*lp),'b')
+plt.plot(lp, np.sin(sin1*V[refp,0])*np.sin(sin2*V[refp,1])*np.cos(np.sqrt(sin1**2+sin2**2)*lp),'b')
 plt.legend(["simulation", "analytic"],loc=2)
 plt.show()
 
