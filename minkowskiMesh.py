@@ -38,8 +38,9 @@ dx = bx/Nx
 circ = 15
 
 V,E = reqrecMsh(bx,bt,dx) #makerec
-# V = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\vert.txt")*2*np.pi
-# E = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\tria.txt",dtype='int32')
+V = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\vert.txt")*2*np.pi
+E = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\tria.txt",dtype='int32')
+E = np.loadtxt("C:\MyTemp\python\mod.txt",dtype='int32')
 sc = simplicial_complex(V,E)
 
 plt.figure(figsize=(8, 8), dpi=80)
@@ -52,7 +53,7 @@ plt.plot(sc[2].circumcenter[:,0],sc[2].circumcenter[:,1],'.g')
 edgeVectors = V[sc[1].simplices[:,0]]-V[sc[1].simplices[:,1]]
 timelikeEdges = 2*(edgeVectors[:,1]**2-edgeVectors[:,0]**2>0)-1
 drawtimelike = np.where((edgeVectors[:,1]**2-edgeVectors[:,0]**2>0))
-plt.plot(sc[1].circumcenter[drawtimelike,0],sc[1].circumcenter[drawtimelike,1],'.r')
+# plt.plot(sc[1].circumcenter[drawtimelike,0],sc[1].circumcenter[drawtimelike,1],'.r')
 plt.show()
 
 xmin = np.min(V[:,0])
