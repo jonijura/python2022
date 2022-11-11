@@ -32,7 +32,7 @@ bxy = np.pi
 dxy = bxy/Nxy
 refp = 88
 sin1 = 1
-sin2 = 1
+sin2 = 2
 
 bt = 4.5
 Nt = 50
@@ -73,9 +73,9 @@ hist = np.zeros(Nt+1)
 hist[0]=f[refp]
 for i in range(Nt):
     f+=B*g
-    g+=A*f
+    g+=A*f    
     hist[i+1]=f[refp]
-
+    
 fig = plt.figure()
 ax = fig.add_subplot(121,projection='3d')
 ax.set_zlim( [-1,1])
