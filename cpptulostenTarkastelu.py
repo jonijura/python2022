@@ -32,6 +32,7 @@ solLoc1 = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\localTimeste
 plt.plot(np.linspace(0,1,solGlob.size),solGlob)
 plt.plot(np.linspace(0,1,solLoc1.size),solLoc1)
 plt.legend(["global timestep", "local timestep1"])
+plt.show()
 
 # from scipy.sparse import csr_matrix
 # from scipy.sparse.linalg import eigs
@@ -49,3 +50,56 @@ plt.legend(["global timestep", "local timestep1"])
 # lev = 20/(np.pi*fm);
 # pl = np.exp(-(i*dt-3*lev)*(i*dt-3*lev)/(lev*lev))*np.sin(2*np.pi*fm*(i*dt-3*lev));
 # plt.plot(pl)
+
+#Fourier analyysi
+refphist = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\GTSrefphistory.txt")
+fmin=0.01
+fmax=4
+dt = 0.000715987
+a = 1.0
+N=refphist.shape[0]
+
+f = (1/dt)*np.linspace(0,1,N) #Diskreettiä muunnosta vastaavat taajuudet
+st = int(np.round(fmin*dt*N))
+end = int(np.round(fmax*dt*N))
+
+egmds = np.sqrt(np.array((3,6,9,11,12,14,19)))/(2*a)
+
+p = abs(np.fft.fft(refphist[:,0]))**2
+plt.plot(f[st:end],p[st:end])
+plt.plot(egmds, np.ones(egmds.size),'r.')
+# plt.show()
+p = abs(np.fft.fft(refphist[:,1]))**2
+plt.plot(f[st:end],p[st:end])
+plt.plot(egmds, np.ones(egmds.size),'r.')
+# plt.show()
+p = abs(np.fft.fft(refphist[:,2]))**2
+plt.plot(f[st:end],p[st:end])
+plt.plot(egmds, np.ones(egmds.size),'r.')
+plt.show()
+
+aoi = p[st:end]
+foi = f[np.argwhere(aoi>1e7)]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

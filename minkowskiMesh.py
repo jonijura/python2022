@@ -11,17 +11,26 @@ vertices, i corresponds to known initial values at t=0 and u to unknown.
 boundary values f = 0 could not be encorporated to initial values, but in the hodge h0i
 mapping dual 2 forms to primal 0 forms, such that h0i=0 for boundary dual 2 forms
 The circumcenters are calculated in the sense of minkowski metric by modifying circumcenter.py
-h1 is modified by multiplying timelike primal edge values with -1 (why?)
+h1 is modified by multiplying timelike primal edge values with -1
     timelike if (dt)**2-(dx)**2>0
 Representing the matrix *d*d as [A1,A2] *d*d f=0 leads to
     [A1,A2]*[u,i].T=[A1u+A2i]=0,
 where u is solved as the least squares solution to
     A1u = -A2i = b
 
-why does modifying h1 work?
 why do boundary values need to be in h0i?
-why is the solution right only it bt = n*pi??
+why is the solution right only it bt = n*pi?
     implicit von neumann boundary condition at the end
+
+requires overriding circumcenter in circumcenter.py with
+    if len(pts)==3:
+        pts = asarray(pts)
+        A = pts[1:,:]-pts[0,:]
+        A[:,1]=-A[:,1]
+        b = (A[:,0]*A[:,0]-A[:,1]*A[:,1])/2
+        x = solve(A,b) + pts[0,:]
+        dst = sqrt(abs((x[1]-pts[0][1])**2 - (x[0]-pts[0][0])**2))
+        return(x,dst)
 """
 
 import numpy as np

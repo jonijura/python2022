@@ -10,7 +10,8 @@ C = tkinter.Canvas(root, bg="white", height=sz+10, width=sz+10)
 
 V = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\vert.txt")*sz
 E = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\tria.txt",dtype='int32')
-V,E = makerec(sz,sz,sz/10)
+V,E = reqrecMsh(sz,sz,sz/10)
+V[:,[1,0]]=V[:,[0,1]]
 sc = simplicial_complex(V,E)
 
 
@@ -19,36 +20,37 @@ marks = np.zeros(sc[1].num_simplices, dtype='int32')
 def draw():
     o = 5
     for i,a in zip(marks, sc[1].simplices):
-        colors = ["black","blue","red"]
+        colors = ["black","blue","yellow","red"]
         C.create_line(V[a[0]][0]+o,V[a[0]][1]+o,V[a[1]][0]+o,V[a[1]][1]+o, fill=colors[i])            
 
+def updateAll(marks):
+    for i in range(sc[1].num_simplices):
+        updateComplete(i, marks)
 
-def updateComplete(edg):
-    global marks
+def updateComplete(edg, marks):
+    #nodes that are only missing one edge
     for vert in sc[1].simplices[edg]:
         vertEdges = sc[0].d.getcol(vert).indices
-        if np.count_nonzero(marks[vertEdges]==2) == vertEdges.size-1:
-            marks[vertEdges] = np.maximum(marks[vertEdges], np.ones(vertEdges.size))
+        if np.count_nonzero(marks[vertEdges]==3) == vertEdges.size-1:
+            marks[vertEdges] = np.maximum(marks[vertEdges], 2*np.ones(vertEdges.size))
     #faces that are only missing one edge
     for vert in sc[1].d.getcol(edg).indices:
         faceEdges1 = sc[2].index_to_simplex[vert].boundary()
         edges1 = [sc[1].simplex_to_index[i] for i in faceEdges1]
-        if np.count_nonzero(marks[edges1]==2) == 2:
+        if np.count_nonzero(marks[edges1]==3) == 2:
             marks[edges1] = np.maximum(marks[edges1], np.ones(3))
 
 def detect(event):
     global marks
     edg = np.sum((sc[1].circumcenter-[event.x,event.y])**2, axis=-1).argmin()
-    marks[edg]=2
-    updateComplete(edg)
-    #nodes that are only missing one edge
+    marks[edg]=3
+    updateComplete(edg, marks)
     draw()
 
 def iterate(event):
     global marks
-    marks = 2*(marks>0)
-    for i in range(sc[1].num_simplices):
-        updateComplete(i)
+    marks = 3*(marks>0)
+    updateAll(marks)
     draw()
 
 # C.bind("<Button-1>", flip)
