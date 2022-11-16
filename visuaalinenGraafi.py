@@ -8,10 +8,12 @@ sz = 500
 
 C = tkinter.Canvas(root, bg="white", height=sz+10, width=sz+10)
 
-V = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\vert.txt")*sz
-E = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\tria.txt",dtype='int32')
-V,E = reqrecMsh(sz,sz,sz/10)
+# V = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\vert.txt")*sz
+# E = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\tria.txt",dtype='int32')
+stretch  = 2
+V,E = reqrecMsh(sz/stretch,sz,sz/10)
 V[:,[1,0]]=V[:,[0,1]]
+V[:,1]*=stretch
 sc = simplicial_complex(V,E)
 
 

@@ -46,10 +46,11 @@ dx = bx/Nx
 
 circ = 15
 
-V,E = reqrecMsh(bx,bt,dx) #makerec
-# V = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\vert.txt")*2*np.pi
-# E = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\tria.txt",dtype='int32')
+V,E = makerec(bx,bt,dx) #makerec
+V = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\vert.txt")*2*np.pi
+E = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\tria.txt",dtype='int32')
 # E = np.loadtxt("C:\MyTemp\python\mod.txt",dtype='int32')
+V[:,[1,0]]=V[:,[0,1]]
 sc = simplicial_complex(V,E)
 
 plt.figure(figsize=(8, 8), dpi=80)

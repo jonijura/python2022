@@ -54,8 +54,8 @@ plt.show()
 #Fourier analyysi
 refphist = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\GTSrefphistory.txt")
 fmin=0.01
-fmax=4
-dt = 0.000715987
+fmax=1.5
+dt = 0.000224792
 a = 1.0
 N=refphist.shape[0]
 
@@ -67,15 +67,13 @@ egmds = np.sqrt(np.array((3,6,9,11,12,14,19)))/(2*a)
 
 p = abs(np.fft.fft(refphist[:,0]))**2
 plt.plot(f[st:end],p[st:end])
-plt.plot(egmds, np.ones(egmds.size),'r.')
 # plt.show()
 p = abs(np.fft.fft(refphist[:,1]))**2
 plt.plot(f[st:end],p[st:end])
-plt.plot(egmds, np.ones(egmds.size),'r.')
 # plt.show()
 p = abs(np.fft.fft(refphist[:,2]))**2
 plt.plot(f[st:end],p[st:end])
-plt.plot(egmds, np.ones(egmds.size),'r.')
+# plt.plot(egmds, np.ones(egmds.size),'r.')
 plt.show()
 
 aoi = p[st:end]

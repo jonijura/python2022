@@ -37,9 +37,11 @@ from pydec import simplicial_complex
 import matplotlib.pyplot as plt
 from scipy.sparse import diags
 
-Lx = 2*np.pi #length of mesh in the spatial direction, multiple of pi
-Ly = np.pi #time period simulation
-N=12 #discretization level, meshpoints per Lx
+Lt = np.pi #length of mesh in the spatial direction, multiple of pi
+Lx = np.pi #time period simulation
+stretch  = 1
+N=14 #discretization level, meshpoints per Lx
+visualise = True
 
 #find out which edges have enough information to be updated via de=0 or d*e=0
 def updateComplete(edg, marks, updates):
@@ -63,11 +65,12 @@ def updateComplete(edg, marks, updates):
 
 
 #regular rectangular triangle mesh
-V,E = reqrecMsh(Lx,Ly,Lx/N)
+V,E = reqrecMsh(Lt/stretch,Lx,Lx/N)
 V[:,[1,0]]=V[:,[0,1]]#rotate mesh 90deg, otherwise there is no explicit timestepping scheme
+V[:,1]*=stretch
 sc = simplicial_complex(V,E)
 
-initialVals = np.where(sc[1].circumcenter[:,1]>Lx-0.01)
+initialVals = np.where(sc[1].circumcenter[:,1]>Lt-0.01)
 initialEdgeBoundaries = sc[1].simplices[initialVals]
 
 e = np.zeros(sc[1].num_simplices)
@@ -118,15 +121,15 @@ while len(updates)>0:
         R=np.linalg.solve(left,right)
         
         v[j] = R[0] #visualise dx component of one form e
-        
-        fig = plt.figure(figsize=(10, 5), dpi=80)
-        ax = fig.add_subplot(121,projection='3d')
-        # ax.plot_trisurf(sc[1].circumcenter[:,0], sc[1].circumcenter[:,1], e,cmap='viridis', edgecolor='none')
-        ax.plot_trisurf(V[:,0], V[:,1], v, cmap='viridis', edgecolor='none')
-        ax = fig.add_subplot(122)
-        plt.triplot(V[:,0], V[:,1], E)
-        plt.plot(V[solved,0], V[solved,1], 'r.')
-        plt.show()
+        if visualise:
+            fig = plt.figure(figsize=(10, 5), dpi=80)
+            ax = fig.add_subplot(121,projection='3d')
+            # ax.plot_trisurf(sc[1].circumcenter[:,0], sc[1].circumcenter[:,1], e,cmap='viridis', edgecolor='none')
+            ax.plot_trisurf(V[:,0], V[:,1], v, cmap='viridis', edgecolor='none')
+            ax = fig.add_subplot(122)
+            plt.triplot(V[:,0], V[:,1], E)
+            plt.plot(V[solved,0], V[solved,1], 'r.')
+            plt.show()
     if marks[i,0] == 2:
         e[i] = -d1[j,i]*d1[j,:]*e
     marks[i,0] = 3#mark edge as solved
@@ -156,9 +159,6 @@ plt.show()
     
 ax = plt.axes()
 ax.tricontour(V[:,0], V[:,1], v)
-
-
-
 
 
 
