@@ -80,6 +80,32 @@ aoi = p[st:end]
 foi = f[np.argwhere(aoi>1e7)]
 
 
+tsmsh = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\tsmsh2.txt")
+fig = plt.figure(figsize=(10, 8), dpi=80)
+ax = fig.add_subplot(231,projection='3d')
+ax.plot_trisurf(tsmsh[:,0], tsmsh[:,1], tsmsh[:,2],cmap='viridis', edgecolor='none')
+plt.title("Simulation results")
+
+ax = fig.add_subplot(232,projection='3d')
+ax.plot_trisurf(tsmsh[:,0], tsmsh[:,1], tsmsh[:,3],cmap='viridis', edgecolor='none')
+
+ax = fig.add_subplot(233,projection='3d')
+ax.plot_trisurf(tsmsh[:,0], tsmsh[:,1], tsmsh[:,4],cmap='viridis', edgecolor='none')
+
+ax = fig.add_subplot(234,projection='3d')
+e1 = 1/np.sqrt(2) * np.cos(tsmsh[:,0]) * np.sin(tsmsh[:,1]) * np.sin(np.sqrt(2)*np.pi)
+ax.plot_trisurf(tsmsh[:,0], tsmsh[:,1], tsmsh[:,2]-e1 ,cmap='viridis', edgecolor='none')
+plt.title("Error")
+
+e2 = 1/np.sqrt(2) * np.sin(tsmsh[:,0]) * np.cos(tsmsh[:,1]) * np.sin(np.sqrt(2)*np.pi)
+ax = fig.add_subplot(235,projection='3d')
+ax.plot_trisurf(tsmsh[:,0], tsmsh[:,1], tsmsh[:,3]-e2 ,cmap='viridis', edgecolor='none')
+
+e3 = np.sin(tsmsh[:,0]) * np.sin(tsmsh[:,1]) * np.cos(np.sqrt(2)*np.pi)
+ax = fig.add_subplot(236,projection='3d')
+ax.plot_trisurf(tsmsh[:,0],tsmsh[:,1],  tsmsh[:,4]-e3,cmap='viridis', edgecolor='none')
+plt.show()
+
 
 
 

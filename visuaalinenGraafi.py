@@ -11,7 +11,7 @@ C = tkinter.Canvas(root, bg="white", height=sz+10, width=sz+10)
 # V = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\vert.txt")*sz
 # E = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\tria.txt",dtype='int32')
 stretch  = 2
-V,E = reqrecMsh(sz/stretch,sz,sz/10)
+V,E = reqrecMsh(sz/stretch,sz,sz/5)
 V[:,[1,0]]=V[:,[0,1]]
 V[:,1]*=stretch
 sc = simplicial_complex(V,E)
@@ -22,8 +22,8 @@ marks = np.zeros(sc[1].num_simplices, dtype='int32')
 def draw():
     o = 5
     for i,a in zip(marks, sc[1].simplices):
-        colors = ["black","blue","yellow","red"]
-        C.create_line(V[a[0]][0]+o,V[a[0]][1]+o,V[a[1]][0]+o,V[a[1]][1]+o, fill=colors[i])            
+        colors = ["black","blue","orange","red"]
+        C.create_line(V[a[0]][0]+o,V[a[0]][1]+o,V[a[1]][0]+o,V[a[1]][1]+o, fill=colors[i],  width=5)            
 
 def updateAll(marks):
     for i in range(sc[1].num_simplices):

@@ -40,8 +40,8 @@ from scipy.sparse import diags
 Lt = np.pi #length of mesh in the spatial direction, multiple of pi
 Lx = np.pi #time period simulation
 stretch  = 1
-N=14 #discretization level, meshpoints per Lx
-visualise = True
+N=9#discretization level, meshpoints per Lx
+visualise = False
 
 #find out which edges have enough information to be updated via de=0 or d*e=0
 def updateComplete(edg, marks, updates):
@@ -65,12 +65,12 @@ def updateComplete(edg, marks, updates):
 
 
 #regular rectangular triangle mesh
-V,E = reqrecMsh(Lt/stretch,Lx,Lx/N)
+V,E = reqrecMsh(Lt,Lx,Lx/N)
 V[:,[1,0]]=V[:,[0,1]]#rotate mesh 90deg, otherwise there is no explicit timestepping scheme
 V[:,1]*=stretch
 sc = simplicial_complex(V,E)
 
-initialVals = np.where(sc[1].circumcenter[:,1]>Lt-0.01)
+initialVals = np.where(sc[1].circumcenter[:,1]>Lt*stretch-0.01)
 initialEdgeBoundaries = sc[1].simplices[initialVals]
 
 e = np.zeros(sc[1].num_simplices)
