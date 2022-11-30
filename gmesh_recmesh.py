@@ -92,7 +92,7 @@ def makecube(w,h,d,r):
     gmsh.model.mesh.generate(3)
     #gmsh.model.mesh.refine()
     #gmsh.model.mesh.optimize("Netgen")
-    #gmsh.fltk.run()
+    gmsh.fltk.run()
 
     b = gmsh.model.mesh.getNodes()[1]
     V = np.reshape(b,(int(len(b)/3),3))

@@ -38,7 +38,7 @@ bt = 4.5
 Nt = 50
 dt = bt/Nt
 
-V,E = makerec(bxy,bxy,dxy)
+V,E = reqrecMsh(bxy,bxy,dxy)
 # V = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\vert.txt")*np.pi
 # E = np.loadtxt("C:\MyTemp\cpp\Samples\MeshGeneration2\\build\\tria.txt",dtype='int32')
 sc = simplicial_complex(V,E)
